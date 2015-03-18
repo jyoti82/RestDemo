@@ -5,9 +5,12 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.rest.model.CatlogItem;
 import com.rest.model.User;
 
 /*
@@ -169,6 +172,43 @@ public class Database {
 	            }
 	        }
 		return null;
+	}
+
+	public static List<CatlogItem> getCatlogItemDetails() throws SQLException {
+		// TODO Auto-generated method stub
+		List<CatlogItem> catlogList = new ArrayList<CatlogItem>();
+		CatlogItem catlogItem;
+		Connection dbConn = null;
+        try {
+            try {
+                dbConn = getConnection();
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            Statement stmt = dbConn.createStatement();
+            String query = "SELECT * FROM Catlog";
+            System.out.println(query);
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+            	//System.out.println(rs.getString("username")+rs.getString("password")+rs.getString("email")+""+rs.getInt("user_id"));
+            	catlogItem = new CatlogItem(rs.getInt("itemId"),rs.getString("itemName"),rs.getString("itemDescription"),rs.getString("image"),rs.getInt("quantityAvailable"),rs.getInt("price"));
+               catlogList.add(catlogItem);
+               }
+        } catch (SQLException sqle) {
+            throw sqle;
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            if (dbConn != null) {
+                dbConn.close();
+            }
+            throw e;
+        } finally {
+            if (dbConn != null) {
+                dbConn.close();
+            }
+        }
+		return catlogList;
 	}
 }
 
